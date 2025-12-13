@@ -1,0 +1,22 @@
+/**
+ * Firebase Configuration Template
+ * 
+ * ⚠️ IMPORTANT: This file should NOT be committed to version control.
+ * Each deployment should create its own firebase-config.js from this template.
+ * 
+ * Steps:
+ * 1. Copy this file to firebase-config.js (without .template)
+ * 2. Replace YOUR_* values with actual Firebase config from:
+ *    Firebase Console > Project Settings > Your Apps > Web
+ * 3. Keep firebase-config.js in .gitignore
+ */
+
+window.__FIREBASE_CONFIG__ = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID" // optional
+};
