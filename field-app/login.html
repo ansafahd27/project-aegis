@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aegis - Login</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+</head>
+
+<body>
+  <div class="login-container">
+    <h1>🚨 Project Aegis</h1>
+    <p>Field Responder Authentication</p>
+
+    <form id="loginForm">
+      <label>Full Name</label>
+      <input type="text" id="name" placeholder="John Doe" required />
+
+      <label>NIC Number (ID)</label>
+      <input type="text" id="nic" placeholder="National Identity Card" required />
+
+      <button type="submit">Login / Register</button>
+    </form>
+
+    <p id="loginStatus"></p>
+  </div>
+
+  <script src="js/db.js"></script>
+
+  <script>
+    // Check if already logged in locally
+    (async () => {
+      const session = await db.auth_session.get(1);
+      if (session && session.expiresAt > Date.now()) {
+        window.location.href = 'index.html';
+      }
+    })();
+
+    // Handle login
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nameInput = document.getElementById('name').value.trim();
+      const nicInput = document.getElementById('nic').value.trim();
+      const statusEl = document.getElementById('loginStatus');
+
+      if (nicInput.length < 5) {
+        statusEl.textContent = '❌ Invalid NIC number';
+        statusEl.style.color = '#f87171';
+        return;
+      }
+
+      statusEl.textContent = 'Verifying ID with HQ...';
+      statusEl.style.color = 'var(--text-muted)';
+
+      try {
+        // Direct call to Backend Auth (bypass Firebase Client Auth)
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: nameInput, nic: nicInput })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Authentication failed');
+        }
+
+        // Cache session in IndexedDB
+        const session = {
+          id: 1,
+          userId: data.userId,
+          email: data.email, // backend generated email
+          name: data.name,
+          nic: data.nic,
+          token: data.token,
+          loginTime: new Date().toISOString(),
+          expiresAt: Date.now() + (30 * 24 * 60 * 60 * 1000) // 30 days
+        };
+
+        await db.auth_session.put(session);
+
+        statusEl.textContent = '✅ Authenticated! Access Granted.';
+        statusEl.style.color = '#4ade80';
+
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1000);
+
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = `❌ ${err.message}`;
+        statusEl.style.color = '#f87171';
+      }
+    });
+  </script>
+</body>
+
+</html>

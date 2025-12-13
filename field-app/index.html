@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aegis Responder</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Dexie -->
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+</head>
+
+<body>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="header">
+    <h1>🚨 Incident Report</h1>
+    <p id="status">Checking network...</p>
+    <p id="userInfo"></p>
+    <button id="logoutBtn" style="display:none;">Logout</button>
+  </div>
+
+  <form id="reportForm">
+    <label>Incident Type</label>
+    <select id="type" required>
+      <option value="Flood">Flood</option>
+      <option value="Landslide">Landslide</option>
+      <option value="Road Block">Road Block</option>
+      <option value="Power Line Down">Power Line Down</option>
+    </select>
+
+    <label>Severity: <span id="severityValue" style="color:var(--primary-color); font-weight:bold;">3</span>
+      (1=Critical, 5=Low)</label>
+    <div class="slider-container">
+      <input type="range" id="severity" min="1" max="5" value="3" step="1" required />
+      <div class="slider-labels">
+        <span>Critical</span>
+        <span>Low</span>
+      </div>
+    </div>
+
+    <label>Photo (Optional)</label>
+    <input type="file" id="photo" accept="image/*" capture="environment" />
+
+    <div id="gpsStatus">📍 Acquiring GPS...</div>
+    <button type="button" id="refreshGpsBtn"
+      style="background: var(--input-bg); margin-top: 0; margin-bottom: 20px; font-size: 0.8rem; padding: 8px;">🔄
+      Update / Retry GPS</button>
+
+    <button type="submit" id="submitBtn">Save Report</button>
+  </form>
+
+  <div id="pendingReports">
+    <h3>Pending Reports (Local)</h3>
+    <ul id="pendingList"></ul>
+  </div>
+
+  <script src="js/db.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+
+</html>

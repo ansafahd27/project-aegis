@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aegis Command Dashboard</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    :root {
+      --primary: #f43f5e;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .header {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #fff, var(--primary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .status span {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 12px;
+      border-radius: 50px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      background: var(--bg);
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 450px;
+      flex: 1;
+      height: calc(100vh - 180px);
+      /* Adjust for header+stats */
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+      z-index: 1;
+    }
+
+    .sidebar {
+      background: var(--card);
+      border-left: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .sidebar h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .report-card {
+      background: #273548;
+      padding: 1.25rem;
+      border-radius: 12px;
+      border-left: 5px solid var(--primary);
+      transition: all 0.2s;
+      margin-bottom: 1rem;
+      /* Added spacing */
+    }
+
+    .report-card:hover {
+      background: #334155;
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .report-type {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .severity-badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #000;
+      /* Contrast text */
+    }
+
+    .timestamp {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .coords {
+      font-family: monospace;
+      font-size: 0.8rem;
+      color: #64748b;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        height: 400px;
+        order: 2;
+      }
+
+      #map {
+        height: 400px;
+        order: 1;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      body {
+        height: auto;
+        overflow: auto;
+      }
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--card);
+      border: 1px solid var(--primary);
+      color: var(--text);
+      padding: 1rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease-out;
+      min-width: 280px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .toast-icon {
+      font-size: 1.5rem;
+    }
+
+    .toast-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toast-title {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .toast-msg {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="header">
+    <h1>🗺️ Project Aegis - Command Dashboard</h1>
+    <div class="status">
+      <span id="lastUpdate">Loading...</span>
+      <span id="reportCount">0 reports</span>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value" id="totalReports">0</div>
+      <div class="stat-label">Total Reports</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="criticalReports">0</div>
+      <div class="stat-label">Critical (Severity 1-2)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="lastHour">0</div>
+      <div class="stat-label">Last Hour</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="map"></div>
+
+    <div class="sidebar">
+      <h2>Recent Incidents</h2>
+      <div id="reportsList"></div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const API_URL = '/api'; // Relative path for cloud deployment
+    const AUTH_TOKEN = localStorage.getItem('aegis_admin_token'); // Store admin token
+
+    // Initialize map
+    const map = L.map('map').setView([6.7056, 80.3847], 11); // Ratnapura coordinates
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let markers = [];
+    let reports = [];
+
+    // Severity colors
+    const severityColors = {
+      1: '#dc2626',
+      2: '#ea580c',
+      3: '#eab308',
+      4: '#3b82f6',
+      5: '#22c55e'
+    };
+
+    const severityLabels = {
+      1: 'Critical',
+      2: 'High',
+      3: 'Medium',
+      4: 'Low',
+      5: 'Minimal'
+    };
+
+    // Notification System
+    const toastContainer = document.getElementById('toastContainer');
+    let knownReportIds = new Set();
+    let isFirstLoad = true;
+
+    function showNotification(title, message, severity) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.style.borderLeft = `5px solid ${severityColors[severity]}`;
+
+      toast.innerHTML = `
+        <div class="toast-icon">📢</div>
+        <div class="toast-content">
+          <span class="toast-title">${title}</span>
+          <span class="toast-msg">${message}</span>
+        </div>
+      `;
+
+      toastContainer.appendChild(toast);
+
+      // Auto remove after 5s
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-20px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 5000);
+    }
+
+    // Fetch reports from backend
+    async function fetchReports() {
+      try {
+        const response = await fetch(`${API_URL}/reports`, {
+          headers: {
+            'Authorization': `Bearer ${AUTH_TOKEN || 'demo-token'}`
+          }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch');
+
+        const data = await response.json();
+        reports = data.reports || [];
+
+        // Check for new reports
+        if (!isFirstLoad) {
+          reports.forEach(r => {
+            if (!knownReportIds.has(r.id)) {
+              showNotification(
+                'New Incident Reported',
+                `${r.incidentType} (Severity ${r.severity})`,
+                r.severity
+              );
+            }
+          });
+        }
+
+        // Update known IDs
+        reports.forEach(r => knownReportIds.add(r.id));
+        isFirstLoad = false;
+
+        updateDashboard();
+        updateStats();
+
+        document.getElementById('lastUpdate').textContent =
+          `Last update: ${new Date().toLocaleTimeString()}`;
+
+      } catch (err) {
+        console.error('Fetch error:', err);
+        document.getElementById('lastUpdate').textContent = 'Connection error';
+      }
+    }
+
+    // Update map and list
+    function updateDashboard() {
+      // Clear existing markers
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+
+      // Add new markers
+      reports.forEach(report => {
+        const icon = L.divIcon({
+          html: `<div style="
+            background: ${severityColors[report.severity]};
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+          ">${report.severity}</div>`,
+          className: '',
+          iconSize: [30, 30]
+        });
+
+        const marker = L.marker([report.lat, report.lng], { icon })
+          .bindPopup(`
+            <strong>${report.incidentType}</strong><br>
+            Severity: ${report.severity}<br>
+            Time: ${new Date(report.timestamp).toLocaleString()}<br>
+            By: ${report.submittedBy || 'Unknown'}
+          `)
+          .addTo(map);
+
+        markers.push(marker);
+      });
+
+      // Update sidebar list
+      const list = document.getElementById('reportsList');
+
+      if (reports.length === 0) {
+        list.innerHTML = '<p style="color: #666;">No reports yet</p>';
+        return;
+      }
+
+      list.innerHTML = reports.map(r => `
+        <div class="report-card severity-${r.severity}">
+          <div class="report-header">
+            <span class="report-type">${r.incidentType}</span>
+            <span class="severity-badge" style="background: ${severityColors[r.severity]}">
+              Severity ${r.severity}
+            </span>
+          </div>
+          <div class="timestamp">${new Date(r.timestamp).toLocaleString()}</div>
+          <div class="coords">📍 ${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}</div>
+          ${r.submittedBy ? `<div style="font-size: 0.85rem; color: #999; margin-top: 0.5rem;">By: ${r.submittedBy}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // Update statistics
+    function updateStats() {
+      const total = reports.length;
+      const critical = reports.filter(r => r.severity <= 2).length;
+
+      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+      const lastHour = reports.filter(r =>
+        new Date(r.timestamp) > oneHourAgo
+      ).length;
+
+      document.getElementById('totalReports').textContent = total;
+      document.getElementById('criticalReports').textContent = critical;
+      document.getElementById('lastHour').textContent = lastHour;
+      document.getElementById('reportCount').textContent = `${total} reports`;
+    }
+
+    // Auto-refresh every 5 seconds
+    fetchReports();
+    setInterval(fetchReports, 5000);
+  </script>
+
+</body>
+
+</html>
