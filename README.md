@@ -82,11 +82,19 @@ node server.js
 
 ## 🎓 VIVA Session Preparation
 
-**Preparing for your VIVA?** We've created comprehensive documentation to help you explain the code:
+**Preparing for your VIVA?** We've created comprehensive documentation totaling **2,891+ lines** to help you explain the code:
 
-### 📚 Documentation Files
+### 📚 Documentation Index
 
-1. **[VIVA_GUIDE.md](VIVA_GUIDE.md)** - Start here! Guide on how to use all documentation
+👉 **[VIVA_DOCUMENTATION_INDEX.md](VIVA_DOCUMENTATION_INDEX.md)** - Complete guide to all documentation
+
+### 📁 Quick Access to Documentation Files
+
+1. **[VIVA_GUIDE.md](VIVA_GUIDE.md)** ⭐ Start here! Master guide (323 lines)
+   - How to use all documentation
+   - Preparation timeline
+   - Study order recommendations
+
 2. **[VIVA_PREPARATION.md](VIVA_PREPARATION.md)** - Complete technical reference (878 lines)
    - Detailed code explanations
    - Backend, Field App, Dashboard architecture  
@@ -102,6 +110,16 @@ node server.js
 
 4. **[VIVA_FLOWCHARTS.md](VIVA_FLOWCHARTS.md)** - Visual explanations (914 lines)
    - 8 detailed ASCII flowcharts
+   - System architecture diagrams
+   - Data flow visualizations
+
+5. **[VIVA_PRESENTATION_OUTLINE.md](VIVA_PRESENTATION_OUTLINE.md)** - Presentation script (486 lines)
+   - 15-minute presentation outline
+   - Slide-by-slide script
+   - Demo walkthrough
+   - Q&A response templates
+
+**Total: 2,891 lines of comprehensive VIVA preparation material!**
    - System architecture diagrams
    - Data flow visualizations
    - Step-by-step process explanations
