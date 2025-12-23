@@ -71,7 +71,68 @@ Or run the server file directly:
 ```bash
 node server.js
 ```
+
+## 📁 Project Structure
+```
 ├── backend/          # Node.js API Server
 ├── dashboard/        # Admin Dashboard (HTML/CSS/JS)
-└── field-app/        # Mobile Responder App (PWA)
+├── field-app/        # Mobile Responder App (PWA)
+└── docs/             # Comprehensive Documentation
 ```
+
+## 🎓 VIVA Session Preparation
+
+**Preparing for your VIVA?** We've created comprehensive documentation totaling **2,891+ lines** to help you explain the code:
+
+### 📚 Documentation Index
+
+👉 **[VIVA_DOCUMENTATION_INDEX.md](VIVA_DOCUMENTATION_INDEX.md)** - Complete guide to all documentation
+
+### 📁 Quick Access to Documentation Files
+
+1. **[VIVA_GUIDE.md](VIVA_GUIDE.md)** ⭐ Start here! Master guide (323 lines)
+   - How to use all documentation
+   - Preparation timeline
+   - Study order recommendations
+
+2. **[VIVA_PREPARATION.md](VIVA_PREPARATION.md)** - Complete technical reference (878 lines)
+   - Detailed code explanations
+   - Backend, Field App, Dashboard architecture  
+   - 20+ VIVA questions with detailed answers
+   - Code walkthrough scripts
+   - Technical concepts (PWA, IndexedDB, JWT, Service Workers)
+
+3. **[VIVA_QUICK_REFERENCE.md](VIVA_QUICK_REFERENCE.md)** - Last-minute revision (290 lines)
+   - 1-minute project summary
+   - Top 5 features and 10 questions
+   - 2-minute demo script
+   - Common mistakes to avoid
+
+4. **[VIVA_FLOWCHARTS.md](VIVA_FLOWCHARTS.md)** - Visual explanations (914 lines)
+   - 8 detailed ASCII flowcharts
+   - System architecture diagrams
+   - Data flow visualizations
+
+5. **[VIVA_PRESENTATION_OUTLINE.md](VIVA_PRESENTATION_OUTLINE.md)** - Presentation script (486 lines)
+   - 15-minute presentation outline
+   - Slide-by-slide script
+   - Demo walkthrough
+   - Q&A response templates
+
+**Total: 2,891 lines of comprehensive VIVA preparation material!**
+   - System architecture diagrams
+   - Data flow visualizations
+   - Step-by-step process explanations
+
+**Total: 2,082 lines of comprehensive VIVA preparation material!**
+
+### Quick Start for VIVA Prep
+```bash
+# Read in this order:
+1. VIVA_GUIDE.md          # How to use the documentation
+2. VIVA_PREPARATION.md    # Deep technical understanding
+3. VIVA_FLOWCHARTS.md     # Visual explanations
+4. VIVA_QUICK_REFERENCE.md # Final revision before VIVA
+```
+
+---
